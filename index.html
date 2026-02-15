@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Carta de Invitación</title>
+  <style>
+    :root{
+      --rosa-oscuro:#e91e63;
+      --rosa-claro:#f48fb1;
+      --fondo:#fce4ec;
+      --dot:#ff6fa3;
+    }
+
+    body {
+      background: var(--fondo);
+      font-family: 'Georgia', serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    /* SOBRE */
+    .envelope {
+      width: 420px;
+      height: 260px;
+      position: relative;
+      cursor: pointer;
+      perspective: 800px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+    }
+
+    /* cuerpo del sobre */
+    .envelope .body {
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      border: 2px solid var(--rosa-oscuro);
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* solapa triangular hacia abajo (correcta orientación) */
+    .envelope .flap {
+      width: 0;
+      height: 0;
+      border-left: 210px solid transparent;
+      border-right: 210px solid transparent;
+      border-top: 130px solid var(--rosa-claro);
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: transform 0.9s cubic-bezier(.2,.9,.3,1);
+      transform-origin: top center;
+      z-index: 3;
+    }
+
+    /* Puntos rosas decorativos (esquinas y extras) */
+    .pink-dot {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: var(--dot);
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(255,111,163,0.35);
+      z-index: 6;
+    }
+    .pink-dot.tl { top: 12px; left: 12px; }
+    .pink-dot.tr { top: 12px; right: 12px; }
+    .pink-dot.bl { bottom: 12px; left: 12px; }
+    .pink-dot.br { bottom: 12px; right: 12px; }
+
+    /* pequeños puntos decorativos a lo largo del borde superior de la solapa */
+    .flap-dots {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      z-index: 4;
+      pointer-events: none;
+    }
+    .flap-dots .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--dot);
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(255,111,163,0.25);
+    }
+
+    /* icono centrado del sobre (emoji) */
+    .icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 56px;
+      line-height: 1;
+      z-index: 4;
+      pointer-events: none;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+
+    /* texto de instrucción centrado debajo del icono */
+    .envelope .hint {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.85);
+      padding: 8px 14px;
+      border-radius: 8px;
+      color: var(--rosa-oscuro);
+      font-weight: bold;
+      z-index: 5;
+    }
+
+    /* Carta (oculta inicialmente) */
+    .container {
+      display: none;
+      align-items: flex-start;
+      gap: 40px;
+      animation: fadeIn 0.9s ease forwards;
+    }
+
+    .letter {
+      background: #fff;
+      border: 2px solid #f48fb1;
+      border-radius: 12px;
+      padding: 40px;
+      width: 520px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+    }
+
+    .letter h1 {
+      text-align: center;
+      color: var(--rosa-oscuro);
+      font-family: 'Cursive', serif;
+      margin-bottom: 18px;
+    }
+
+    .letter p {
+      font-size: 18px;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .signature {
+      margin-top: 30px;
+      text-align: right;
+      font-style: italic;
+      color: var(--rosa-oscuro);
+    }
+
+    .buttons {
+      margin-top: 26px;
+      text-align: center;
+      position: relative;
+      min-height: 48px;
+    }
+
+    button {
+      background-color: var(--rosa-oscuro);
+      border: none;
+      color: white;
+      padding: 12px 20px;
+      margin: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: transform .18s ease, background-color .18s ease;
+    }
+
+    button:active { transform: scale(.98); }
+    button:hover { background-color: #c2185b; }
+
+    .no {
+      background-color: #9e9e9e;
+    }
+    .no:hover { background-color: #616161; }
+
+    .surprise {
+      margin-top: 18px;
+      display: none;
+      text-align: center;
+    }
+
+    .surprise img {
+      max-width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+    }
+
+    .sheep {
+      width: 650px;
+      text-align: center;
+    }
+
+    .sheep img { width: 100%; }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: scale(0.96);}
+      to {opacity: 1; transform: scale(1);}
+    }
+
+    /* =========================
+   RESPONSIVE – TABLETS
+========================= */
+@media (max-width: 1024px) {
+
+  .container {
+    gap: 24px;
+  }
+
+  .letter {
+    width: 440px;
+    padding: 32px;
+  }
+
+  .sheep {
+    width: 420px;
+  }
+}
+
+/* =========================
+   RESPONSIVE – CELULARES
+========================= */
+@media (max-width: 768px) {
+
+  body {
+    height: auto;
+    padding: 20px;
+  }
+
+  /* SOBRE */
+  .envelope {
+    width: 90%;
+    max-width: 360px;
+    height: 220px;
+  }
+
+  .envelope .flap {
+    border-left: 50% solid transparent;
+    border-right: 50% solid transparent;
+    border-top: 110px solid var(--rosa-claro);
+  }
+
+  .icon {
+    font-size: 44px;
+  }
+
+  .hint {
+    font-size: 14px;
+  }
+
+  /* CARTA */
+  .container {
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+  }
+
+  .letter {
+    width: 100%;
+    max-width: 420px;
+    padding: 26px;
+  }
+
+  .letter p {
+    font-size: 16px;
+  }
+
+  .buttons button {
+    width: 100%;
+    margin: 8px 0;
+  }
+
+  /* CORDERITO */
+  .sheep {
+    width: 600%;
+    max-width: 320px;
+  }
+}
+
+/* =========================
+   RESPONSIVE – CELULARES PEQUEÑOS
+========================= */
+@media (max-width: 480px) {
+
+  .envelope {
+    height: 200px;
+  }
+
+  .letter h1 {
+    font-size: 22px;
+  }
+
+  .letter p {
+    font-size: 15px;
+  }
+
+  .signature {
+    font-size: 14px;
+  }
+}
+
+/* =========================
+   SOLAPA PERFECTA + ANIMACIÓN
+========================= */
+
+@media (max-width: 768px) {
+  .envelope .flap {
+    width: 100%;
+    height: 85px;
+    left: 50%;
+    top: 0;
+
+    border: none;
+    background: var(--rosa-claro);
+
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+
+    /* 👇 CLAVE PARA LA ANIMACIÓN BONITA */
+    transform: translateX(-50%);
+    transform-origin: top center;
+    transform-style: preserve-3d;
+
+    transition: transform 0.9s cubic-bezier(.2,.9,.3,1);
+  }
+}
+
+@media (max-width: 480px) {
+  .envelope .flap {
+    height: 70px;
+  }
+}
+
+    
+
+
+
+  </style>
+</head>
+<body>
+  <!-- Sobre inicial -->
+  <div class="envelope" id="envelope" aria-label="Sobre romántico">
+    <div class="body" aria-hidden="true"></div>
+
+    <!-- solapa -->
+    <div class="flap" id="flap" aria-hidden="true"></div>
+
+    <!-- pequeños puntos sobre la solapa -->
+    <div class="flap-dots" aria-hidden="true">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+
+    <!-- puntos rosas en las cuatro esquinas -->
+    <div class="pink-dot tl" aria-hidden="true"></div>
+    <div class="pink-dot tr" aria-hidden="true"></div>
+    <div class="pink-dot bl" aria-hidden="true"></div>
+    <div class="pink-dot br" aria-hidden="true"></div>
+
+    <!-- icono centrado (puedes cambiar el emoji por un SVG si prefieres) -->
+    <div class="icon" aria-hidden="true">📩</div>
+
+    <div class="hint">Haz clic para abrir 💌</div>
+  </div>
+
+  <!-- Carta con corderito -->
+  <div class="container" id="container">
+    <div class="letter">
+      <h1>💌 Invitación Especial 💌</h1>
+      <p>Mi amor,<br><br>
+         Con todo mi cariño quiero invitarte a una cena romántica<br>
+         el sábado <strong>28 de febrero</strong>.<br><br>
+         Será una noche mágica, solo para nosotros dos.<br><br>
+         ¿Aceptas acompañarme?</p>
+
+      <div class="buttons">
+        <button id="yesBtn">Sí</button>
+        <button class="no" id="noBtn">No</button>
+      </div>
+
+      <div class="surprise" id="surprise">
+        <h2>¡Qué felicidad! 💖</h2>
+        <img src="tu-foto.jpg" alt="Nosotros">
+      </div>
+
+      <div class="signature">
+       Con amor para mi Penelope   ,<br>
+        Tú Odiseo 💕
+
+      </div>
+
+      <audio id="song" src="tu-cancion.mp3"></audio>
+    </div>
+
+    <div class="sheep">
+      <img src="corderito-tulipan.png" alt="Corderito con tulipán">
+    </div>
+  </div>
+
+  <script>
+    const envelope = document.getElementById("envelope");
+    const flap = document.getElementById("flap");
+    const container = document.getElementById("container");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const surprise = document.getElementById("surprise");
+    const song = document.getElementById("song");
+
+    envelope.addEventListener("click", () => {
+     flap.style.transform = "translateX(-50%) rotateX(180deg)";
+
+      setTimeout(() => {
+        envelope.style.display = "none";
+        container.style.display = "flex";
+      }, 900);
+    });
+
+    yesBtn.addEventListener("click", () => {
+      surprise.style.display = "block";
+      if (song && song.play) {
+        song.currentTime = 0;
+        song.play().catch(()=>{/* autoplay bloqueado por navegador */});
+      }
+    });
+
+    // Botón "No" juguetón
+    noBtn.addEventListener("mouseover", () => {
+      const letterBox = document.querySelector(".letter");
+      const maxX = letterBox.offsetWidth - noBtn.offsetWidth - 20;
+      const maxY = letterBox.offsetHeight - noBtn.offsetHeight - 20;
+      const randomX = Math.floor(Math.random() * maxX);
+      const randomY = Math.floor(Math.random() * maxY);
+      noBtn.style.position = "absolute";
+      noBtn.style.left = randomX + "px";
+      noBtn.style.top = randomY + "px";
+    });
+
+    noBtn.addEventListener("click", () => {
+      alert("¡Ni modo mi amor, tu ya eres mia! 😉");
+    });
+  </script>
+</body>
+</html>
